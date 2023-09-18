@@ -1,2 +1,2 @@
-# user-service-backend-MSA
-LIKELION-CORE/user-service-backend-MSA
+# userservice-backend-MSA-
+userservice-backend-MSA 

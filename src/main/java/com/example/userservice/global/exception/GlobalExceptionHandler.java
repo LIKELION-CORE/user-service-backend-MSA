@@ -1,0 +1,176 @@
+package com.example.userservice.global.exception;
+
+import com.example.userservice.global.exception.dto.CommonResponse;
+import com.example.userservice.global.exception.dto.ErrorResponse;
+import com.example.userservice.global.exception.error.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+
+import java.net.BindException;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestControllerAdvice
+@Slf4j
+public class GlobalExceptionHandler {
+
+    /**
+     * 회원가입 시, 회원 계정 정보가 중복 되었을때
+     */
+    @ExceptionHandler(DuplicateAccountException.class)
+    protected ResponseEntity<?> handleDuplicateAccountException(DuplicateAccountException ex) {
+        ErrorCode errorCode = ErrorCode.DUPLICATE_ACCOUNT_EXCEPTION;
+
+        ErrorResponse error = ErrorResponse.builder()
+                .status(errorCode.getStatus().value())
+                .message(errorCode.getMessage())
+                .code(errorCode.getCode())
+                .build();
+
+        CommonResponse response = CommonResponse.builder()
+                .success(false)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
+    /**
+     * 계정 주요 정보의 암호화 과정이 실패 했을때
+     */
+    @ExceptionHandler(EncryptException.class)
+    protected ResponseEntity<CommonResponse> handleEncryptException(EncryptException ex) {
+        ErrorCode errorCode = ErrorCode.ENCRYPT_FAILED_EXCEPTION;
+
+        ErrorResponse error = ErrorResponse.builder()
+                .status(errorCode.getStatus().value())
+                .message(errorCode.getMessage())
+                .code(errorCode.getCode())
+                .build();
+
+        CommonResponse response = CommonResponse.builder()
+                .success(false)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
+    /**
+     * 리퀘스트 파라미터 바인딩이 실패했을때
+     */
+    @ExceptionHandler(BindException.class)
+    protected ResponseEntity<CommonResponse> handleRequestParameterBindException(BindException ex) {
+        ErrorCode errorCode = ErrorCode.REQUEST_PARAMETER_BIND_EXCEPTION;
+
+        ErrorResponse error = ErrorResponse.builder()
+                .status(errorCode.getStatus().value())
+                .message(errorCode.getMessage())
+                .code(errorCode.getCode())
+                .build();
+
+        CommonResponse response = CommonResponse.builder()
+                .success(false)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
+    /**
+     * 사용자 인증이 실패했을때
+     */
+    @ExceptionHandler(AuthenticationException.class)
+    protected ResponseEntity<CommonResponse> handleAuthenticationException(AuthenticationException ex) {
+        ErrorCode errorCode = ErrorCode.AUTHENTICATION_FAILED_EXCEPTION;
+
+        ErrorResponse error = ErrorResponse.builder()
+                .status(errorCode.getStatus().value())
+                .message(errorCode.getMessage())
+                .code(errorCode.getCode())
+                .build();
+
+        CommonResponse response = CommonResponse.builder()
+                .success(false)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
+    /**
+     * 계정을 찿을 수 없을 때
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(NotFoundAccountException.class)
+    protected ResponseEntity<CommonResponse> handleNotFoundAccountException(NotFoundAccountException ex) {
+        ErrorCode errorCode = ErrorCode.NOT_FOUND_ACCOUNT_EXCEPTION;
+
+        ErrorResponse error = ErrorResponse.builder()
+                .status(errorCode.getStatus().value())
+                .message(errorCode.getMessage())
+                .code(errorCode.getCode())
+                .build();
+
+        CommonResponse response = CommonResponse.builder()
+                .success(false)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
+
+    /**
+     *
+     * 유효성검사에 실패하는
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<?> argumentNotValidException(MethodArgumentNotValidException ex) {
+        ErrorCode errorCode = ErrorCode.REQUEST_PARAMETER_BIND_EXCEPTION;
+
+        ErrorResponse error = ErrorResponse.builder()
+                .status(errorCode.getStatus().value())
+                .message(errorCode.getMessage())
+                .code(errorCode.getCode())
+                .build();
+
+        CommonResponse response = CommonResponse.builder()
+                .success(false)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
+
+    /**
+     *  주로 파일 업로드나 멀티파트 요청에서 파트나 매개변수가 누락된 경우에 해당 예외
+     */
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<?> missingServletRequestPartException(MissingServletRequestPartException exception) {
+//        Sentry.captureException(exception);
+        log.error("MissingServletRequestPartException = {}", exception);
+        return ResponseEntity.badRequest().body("MissingServletRequestPartException");
+    }
+    /**
+     *
+     * 유효성검사 타입 불일치
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
+
+        log.error("MethodArgumentTypeMismatchException = {}", exception);
+        return ResponseEntity.badRequest().body("잘못된 형식의 값입니다.");
+    }
+}
