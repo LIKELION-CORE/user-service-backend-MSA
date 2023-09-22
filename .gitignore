@@ -40,3 +40,4 @@ out/
 .script.sh
 target/*
 META-INF/*
+*.yml
