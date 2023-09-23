@@ -4,15 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -27,40 +22,23 @@ public class JwtProvider {
     private final String HEADER_NAME = "Authorization";
     private final String TOKEN_PREFIX = "Bearer ";
 
-    public String generateAccessToken(String username, Authentication authentication) {
-
-
-        List<String> roles = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
-        System.out.println(roles.get(0));
-
+    public String generateAccessToken(String username) {
         return JWT.create()
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
-                .withClaim("username", username)
-                .withClaim("ROLE",roles)
+                .withClaim("userId", username)
                 .sign(Algorithm.HMAC512(SECRET_KEY));
     }
-    public String generateRefreshToken(String username, Authentication authentication) {
-
-        List<String> roles = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
-        System.out.println(roles.get(0));
-
-
+    public String generateRefreshToken(String username) {
         return JWT.create()
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
-                .withClaim("username", username)
-                .withClaim("ROLE",roles)
+                .withClaim("userId", username)
                 .sign(Algorithm.HMAC512(SECRET_KEY));
     }
 
     public boolean verifyToken(String token) {
+        log.info("SECRET_KEY = " + SECRET_KEY);
         try {
             JWT.require(Algorithm.HMAC512(SECRET_KEY)).build().verify(token);
         } catch (Exception e) {
