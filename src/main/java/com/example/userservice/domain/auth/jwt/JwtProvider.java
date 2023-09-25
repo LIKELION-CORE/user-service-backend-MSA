@@ -33,7 +33,6 @@ public class JwtProvider {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        System.out.println(roles.get(0));
         return JWT.create()
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
@@ -77,12 +76,12 @@ public class JwtProvider {
         return JWT.require(Algorithm.HMAC512(SECRET_KEY))
                 .build()
                 .verify(accessToken)
-                .getClaim("userId").asString();
+                .getClaim("username").asString();
     }
     public String getUsernameFromToken(String token) {
         return JWT.require(Algorithm.HMAC512(SECRET_KEY))
                 .build()
                 .verify(token)
-                .getClaim("userId").asString();
+                .getClaim("username").asString();
     }
 }

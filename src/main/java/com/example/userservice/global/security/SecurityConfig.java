@@ -46,23 +46,7 @@ public class SecurityConfig{
     private final RefreshTokenService refreshTokenService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final GlobalExceptionHandlerFilter globalExceptionHandlerFilter;
-    @Value("${permitUrls.all}")
-    private String[] permitUrls_all;
 
-    @Value("${permitUrls.get}")
-    private String[] permitUrls_get;
-
-    @Value("${permitUrls.post}")
-    private String[] permitUrls_post;
-
-    @Value("${permitUrls.put}")
-    private String[] permitUrls_put;
-
-    @Value("${permitUrls.patch}")
-    private String[] permitUrls_patch;
-
-    @Value("${permitUrls.delete}")
-    private String[] permitUrls_delete;
 
 
     @Bean
@@ -71,12 +55,6 @@ public class SecurityConfig{
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        Map<HttpMethod, String[]> permitUrls = new HashMap<>();
-        permitUrls.put(HttpMethod.GET, ArrayUtils.addAll(permitUrls_all, permitUrls_get));
-        permitUrls.put(HttpMethod.POST, ArrayUtils.addAll(permitUrls_all, permitUrls_post));
-        permitUrls.put(HttpMethod.DELETE, ArrayUtils.addAll(permitUrls_all, permitUrls_delete));
-        permitUrls.put(HttpMethod.PUT, ArrayUtils.addAll(permitUrls_all, permitUrls_put));
-        permitUrls.put(HttpMethod.PATCH, ArrayUtils.addAll(permitUrls_all, permitUrls_patch));
         httpSecurity
                 .exceptionHandling()
                 .and()
@@ -87,8 +65,8 @@ public class SecurityConfig{
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), refreshTokenService, jwtProvider))
                 .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), memberService, jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/login","/join","/info").permitAll()
-                .antMatchers(HttpMethod.GET, "/health_check").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/member","/api/v1/member/login").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/member","/api/v1/member/health_check").permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity.addFilterAfter(globalExceptionHandlerFilter,LogoutFilter.class);
@@ -116,7 +94,7 @@ public class SecurityConfig{
                 , "/webjars/**"
                 , "/swagger/**"
                 , "/verify/**"
-        ).antMatchers(HttpMethod.POST, "/user");
+        );
     }
 
 }

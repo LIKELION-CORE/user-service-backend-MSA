@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -69,6 +70,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BindException.class)
     protected ResponseEntity<CommonResponse> handleRequestParameterBindException(BindException ex) {
+
         ErrorCode errorCode = ErrorCode.REQUEST_PARAMETER_BIND_EXCEPTION;
 
         ErrorResponse error = ErrorResponse.builder()
@@ -89,7 +91,7 @@ public class GlobalExceptionHandler {
      * 사용자 인증이 실패했을때
      */
     @ExceptionHandler(AuthenticationException.class)
-    protected ResponseEntity<CommonResponse> handleAuthenticationException(AuthenticationException ex) {
+    protected ResponseEntity<CommonResponse> handleAuthenticationException() {
         ErrorCode errorCode = ErrorCode.AUTHENTICATION_FAILED_EXCEPTION;
 
         ErrorResponse error = ErrorResponse.builder()
@@ -105,6 +107,29 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, errorCode.getStatus());
     }
+
+    /**
+     * 비밀번호가 일치않았을 때
+     */
+    @ExceptionHandler(PasswordNotMatchException.class)
+    protected ResponseEntity<CommonResponse> PasswordNotMatchException() {
+        ErrorCode errorCode = ErrorCode.PASSWORD_NOT_MATCH;
+
+        ErrorResponse error = ErrorResponse.builder()
+                .status(errorCode.getStatus().value())
+                .message(errorCode.getMessage())
+                .code(errorCode.getCode())
+                .build();
+
+        CommonResponse response = CommonResponse.builder()
+                .success(false)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
+
 
     /**
      * 계정을 찿을 수 없을 때
@@ -135,12 +160,17 @@ public class GlobalExceptionHandler {
      * 유효성검사에 실패하는
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<?> argumentNotValidException(MethodArgumentNotValidException ex) {
+    protected ResponseEntity<?> argumentNotValidException(BindingResult bindingResult,MethodArgumentNotValidException ex) {
+        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         ErrorCode errorCode = ErrorCode.REQUEST_PARAMETER_BIND_EXCEPTION;
+
+        List<String> errorMessages = fieldErrors.stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(Collectors.toList());
 
         ErrorResponse error = ErrorResponse.builder()
                 .status(errorCode.getStatus().value())
-                .message(errorCode.getMessage())
+                .message(errorMessages.toString())
                 .code(errorCode.getCode())
                 .build();
 
