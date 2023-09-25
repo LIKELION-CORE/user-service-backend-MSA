@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         super(authenticationManager);
         this.refreshTokenService = refreshTokenService;
         this.jwtProvider = jwtProvider;
-        setFilterProcessesUrl("/login");
+        setFilterProcessesUrl("/api/v1/member/login");
     }
 
     @Override

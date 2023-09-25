@@ -2,9 +2,11 @@ package com.example.userservice.domain.Member.controller;
 
 
 import com.example.userservice.domain.Member.dto.request.SignUpRequestDto;
+import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
 import com.example.userservice.domain.Member.dto.response.MemberInfoResponseDto;
 import com.example.userservice.domain.Member.service.MemberService;
 import com.example.userservice.global.common.CommonResDto;
+import com.example.userservice.global.exception.error.NotFoundAccountException;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +23,41 @@ import java.security.Principal;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api/v1/member")
 public class MemberController {
     private final Environment env;
     private final MemberService memberService;
+
+
+    @PostMapping("")
+    public ResponseEntity<?> createMember(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
+
+        log.info("회원가입 진행 중");
+        return new ResponseEntity<>(new CommonResDto<>(1,"회원생성완료",memberService.createMember(signUpRequestDto)), HttpStatus.CREATED);
+    }
+    @GetMapping("")
+    public ResponseEntity<MemberInfoResponseDto> readMemberInfo(Principal principal) {
+        return new ResponseEntity<>(
+                memberService.getMemberInfo(principal.getName()), HttpStatus.OK
+        );
+    }
+    @PutMapping("")
+    public ResponseEntity<?> updateMember(Principal principal,@Valid @RequestBody UpdateMemberRequesstDto updateMemberRequesstDto) {
+
+        log.info("회원수정 진행 중");
+        if(principal==null){
+            throw new NotFoundAccountException("유저를 찾을 수 없습니다");
+        }
+        memberService.updateMember(principal.getName(),updateMemberRequesstDto);
+        return new ResponseEntity<>(new CommonResDto<>(1,"회원수정완료",""), HttpStatus.OK);
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteMember(Principal principal) {
+
+        log.info("회원삭제 진행 중");
+        return new ResponseEntity<>(new CommonResDto<>(1,"회원삭제완료",memberService.deleteMember(principal.getName())), HttpStatus.OK);
+    }
 
 
     @GetMapping("/health_check")
@@ -44,44 +78,5 @@ public class MemberController {
                 new CommonResDto<>(1,"회원조회성공",memberService.getMemberInfo(principal.getName())),HttpStatus.OK
         );
     }
-
-    @PostMapping("/memberInfo")
-    public ResponseEntity<MemberInfoResponseDto> member(Principal principal) {
-        return new ResponseEntity<>(
-                memberService.getMemberInfo(principal.getName()),HttpStatus.OK
-        );
-        //return memberService.getMemberInfo(principal.getName());
-    }
-
-    @PostMapping("/join")
-    public ResponseEntity<?> createUser(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
-
-        log.info("회원가입 진행 중");
-        return new ResponseEntity<>(new CommonResDto<>(1,"회원생성완료",memberService.createUser(signUpRequestDto)), HttpStatus.CREATED);
-    }
-
-
-//    @GetMapping("/users")
-//    public ResponseEntity<List<ResponseUser>> getUsers() {
-//        Iterable<UserEntity> userList = userService.getUserByAll();
-//        List<ResponseUser> result = new ArrayList<>();
-//        userList.forEach(v -> result.add(new ModelMapper().map(v, ResponseUser.class)));
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(result);
-//    }
-//
-//    @GetMapping("/users/{userId}")
-//    public ResponseEntity<ResponseUser> getUser(@PathVariable("userId") String userId) {
-//        UserDto userDto = userService.getUserByUserId(userId);
-//
-//        ResponseUser responseUser = new ModelMapper().map(userDto, ResponseUser.class);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
-//    }
-    //    @GetMapping("/welcome")
-//    @Timed(value = "users.walcome", longTask = true)
-//    public String welcome() {
-//        log.info("test");
-//        return greeting.getMessage();
-//    }
 
 }

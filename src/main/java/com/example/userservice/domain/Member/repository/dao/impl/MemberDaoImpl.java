@@ -21,14 +21,19 @@ public class MemberDaoImpl implements MemberDao {
     }
 
     @Override
-    public Member findMemberByUserId(String userId) {
-        Member member = memberRepository.findMemberByUserId(userId).orElseThrow(() -> new NotFoundAccountException("계정을 찾을 수 없습니다"));
+    public Member findMemberByUserId(String memberId) {
+        Member member = memberRepository.findMemberByUserId(memberId).orElseThrow(() -> new NotFoundAccountException("계정을 찾을 수 없습니다"));
         return member;
     }
 
     @Override
-    public Optional<Member> duplicateMemberCheck(String userId) {
-        return memberRepository.findByUserId(userId);
+    public Optional<Member> duplicateMemberCheck(String memberId) {
+        return memberRepository.findByUserId(memberId);
+    }
+
+    public void deleteById(Long memberId) {
+        memberRepository.deleteById(memberId);
+
     }
 
 //    @Override

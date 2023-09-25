@@ -1,12 +1,14 @@
 package com.example.userservice.domain.Member.service.impl;
 
 import com.example.userservice.domain.Member.dto.request.SignUpRequestDto;
+import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
 import com.example.userservice.domain.Member.dto.response.CreateMemberResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberInfoResponseDto;
 import com.example.userservice.domain.Member.entity.Member;
 import com.example.userservice.domain.Member.repository.dao.MemberDao;
 import com.example.userservice.domain.Member.service.MemberService;
 import com.example.userservice.global.exception.error.DuplicateAccountException;
+import com.example.userservice.global.exception.error.PasswordNotMatchException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,14 +29,12 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Transactional
-    public CreateMemberResponseDto createUser(SignUpRequestDto signUpRequestDto) {
+    public CreateMemberResponseDto createMember(SignUpRequestDto signUpRequestDto) {
 
         //중복체크검사
         signupVaidate(signUpRequestDto);
-        //회원가입
+        //회원가입 및 db save
         Member savedMember = registerMember(signUpRequestDto);
-
-
         return CreateMemberResponseDto.builder()
                 .userId(savedMember.getUserId())
                 .phone(savedMember.getPhone())
@@ -43,17 +43,11 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
-
-    /**
-     * 유저아이디로 해당 유저상태가져오는 함수
-     */
-    @Override
     public Member findMemberByUserId(String userId) {
 
         return memberDao.findMemberByUserId(userId);
     }
 
-    @Override
     public MemberInfoResponseDto getMemberInfo(String userId) {
         Member member = memberDao.findMemberByUserId(userId);
         return MemberInfoResponseDto.builder()
@@ -61,14 +55,43 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+    @Transactional
+    public Long updateMember(String memberId,UpdateMemberRequesstDto updateMemberRequesstDto) {
+        String userPassword= updateMemberRequesstDto.getPassword();
+
+        Member member = memberDao.findMemberByUserId(memberId);
+        boolean passwordValid = passwordValidationCheck(userPassword, member);
+
+
+        if(passwordValid){
+            updateMemberRequesstDto.setPassword(bCryptPasswordEncoder.encode(userPassword));
+            member.updateMember(updateMemberRequesstDto);
+        }
+        if(!passwordValid){
+            throw new PasswordNotMatchException("비밀번호가 일치하지않습니다");
+        }
+        return member.getId();
+    }
+
+    private boolean passwordValidationCheck(String userPassword, Member member) {
+        if(bCryptPasswordEncoder.matches(userPassword, member.getPassword())){
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public Long deleteMember(String memberId) {
+        Member member = memberDao.findMemberByUserId(memberId);
+        memberDao.deleteById(member.getId());
+        return member.getId();
+    }
+
 
     /**
      * 회원등록
      */
-
     private Member registerMember(SignUpRequestDto signUpRequestDto){
-
-
         // 리팩토링 필요
         signUpRequestDto.setPassword(bCryptPasswordEncoder.encode(signUpRequestDto.getPassword()));
         Member member = signUpRequestDto.toEntity();

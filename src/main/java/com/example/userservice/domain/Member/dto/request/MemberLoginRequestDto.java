@@ -1,9 +1,7 @@
 package com.example.userservice.domain.Member.dto.request;
 
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
@@ -11,6 +9,8 @@ import javax.validation.constraints.Size;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberLoginRequestDto {
 
     @NotEmpty(message = "아이디 설정은 필수입니다.")

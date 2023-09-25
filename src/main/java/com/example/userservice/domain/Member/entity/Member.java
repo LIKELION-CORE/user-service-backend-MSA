@@ -1,5 +1,6 @@
 package com.example.userservice.domain.Member.entity;
 
+import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
 import com.example.userservice.domain.auth.jwt.MemberRole;
 import com.example.userservice.global.entity.BaseTimeEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -41,5 +42,13 @@ public class Member extends BaseTimeEntity {
                 this.phone=phone;
                 this.state=state;
                 this.memberRole=memberRole;
+        }
+
+        public void updateMember(UpdateMemberRequesstDto updateMemberRequesstDto) {
+                this.name=updateMemberRequesstDto.getName();
+                this.password=updateMemberRequesstDto.getPassword();
+                this.memberRole=updateMemberRequesstDto.getMemberRole();
+                this.phone=updateMemberRequesstDto.getPhone();
+
         }
 }

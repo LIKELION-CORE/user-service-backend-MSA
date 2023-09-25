@@ -1,6 +1,8 @@
 server:
   port: 0
 spring:
+  profiles:
+    default: local
   application:
     name: user-service
   redis:
@@ -56,10 +58,3 @@ token:
   expiration_time: 86400000
   secret: user_token
 
-permitUrls:
-  all:
-  get:
-  post: /join
-  delete:
-  put:
-  patch:

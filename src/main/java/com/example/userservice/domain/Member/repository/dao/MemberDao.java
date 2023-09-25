@@ -8,14 +8,9 @@ public interface MemberDao {
     // 간단한 crud 작성
     Member insertMember(Member member);
 
-    Member findMemberByUserId(String userId);
+    Member findMemberByUserId(String memberId);
 
-    Optional<Member> duplicateMemberCheck(String userId);
+    Optional<Member> duplicateMemberCheck(String memberId);
 
-
-//    Optional<Member> selectMember(Long number);
-//
-//    Member updateMember(Long number, String name) throws Exception;
-//
-//    void deleteMember (Long number) throws Exception;
+    void deleteById(Long memberId);
 }
