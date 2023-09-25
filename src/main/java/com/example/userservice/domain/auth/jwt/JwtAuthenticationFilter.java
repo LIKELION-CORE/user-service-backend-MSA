@@ -54,13 +54,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("JwtAuthenticationFilter.successfulAuthentication");
 
-        MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
+        MemberDetails memberDetails = (MemberDetails) authResult.getPrincipal();
 
-        String accessToken = jwtProvider.generateAccessToken(memberDetails.getUsername(),authentication);
-        String refreshToken = jwtProvider.generateRefreshToken(memberDetails.getUsername(),authentication);
+        String accessToken = jwtProvider.generateAccessToken(memberDetails.getUsername());
+        String refreshToken = jwtProvider.generateRefreshToken(memberDetails.getUsername());
 
         refreshTokenService.setRefreshToken(memberDetails.getUsername(), refreshToken);
 

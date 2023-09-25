@@ -41,7 +41,7 @@ public class SignUpRequestDto {
                .email(email)
                .phone(phone)
                .state(true)
-               .memberRole(MemberRole.APPLY)
+               .memberRole(MemberRole.MEMBER)
                .build();
     }
 
