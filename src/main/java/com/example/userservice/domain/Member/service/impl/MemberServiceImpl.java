@@ -40,6 +40,8 @@ public class MemberServiceImpl implements MemberService {
                 .phone(savedMember.getPhone())
                 .email(savedMember.getEmail())
                 .name(savedMember.getName())
+                .department(savedMember.getDepartment())
+                .studentId(savedMember.getStudentId())
                 .build();
     }
 
@@ -92,7 +94,6 @@ public class MemberServiceImpl implements MemberService {
      * 회원등록
      */
     private Member registerMember(SignUpRequestDto signUpRequestDto){
-        // 리팩토링 필요
         signUpRequestDto.setPassword(bCryptPasswordEncoder.encode(signUpRequestDto.getPassword()));
         Member member = signUpRequestDto.toEntity();
 
@@ -111,14 +112,6 @@ public class MemberServiceImpl implements MemberService {
         if (memberDao.duplicateMemberCheck(userId).isPresent()) {
             throw new DuplicateAccountException("아이디 중복");
         }
-
-//
-//        String email = signUpRequestDto.getEmail();
-//        boolean isDuplicateNickname = memberDao.findByEmail(email) != null;
-//
-//        if (isDuplicateNickname) {
-//            throw new DuplicateAccountException("이메일 중복");
-//        }
     }
 
 

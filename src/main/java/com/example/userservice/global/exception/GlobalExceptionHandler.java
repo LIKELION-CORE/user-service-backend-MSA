@@ -133,11 +133,9 @@ public class GlobalExceptionHandler {
 
     /**
      * 계정을 찿을 수 없을 때
-     * @param ex
-     * @return
      */
     @ExceptionHandler(NotFoundAccountException.class)
-    protected ResponseEntity<CommonResponse> handleNotFoundAccountException(NotFoundAccountException ex) {
+    protected ResponseEntity<CommonResponse> handleNotFoundAccountException() {
         ErrorCode errorCode = ErrorCode.NOT_FOUND_ACCOUNT_EXCEPTION;
 
         ErrorResponse error = ErrorResponse.builder()

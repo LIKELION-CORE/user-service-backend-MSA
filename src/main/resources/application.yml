@@ -40,6 +40,8 @@ greeting:
   message: Welcome to the Simple E-commerce.
 
 
+
+
 # feignclient logging
 logging:
   level:
