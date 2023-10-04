@@ -1,0 +1,46 @@
+// ifndef::snippets[]
+// :snippets: ../../../target/generated-snippets
+// endif::[]
+//
+// = 테스트문서
+// :toc: left
+//
+// == 테스트API
+// .Http Request
+// include::{snippets}/get-test/http-request.adoc[]
+//
+// .Http Response
+// include::{snippets}/get-test/http-response.adoc[]
+
+
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+
+= 회원가입
+:toc: left
+
+
+== 회원가입
+.Http Request
+include::{snippets}/join/http-request.adoc[]
+.Http Request field
+include::{snippets}/join/request-fields.adoc[]
+.Http Response field
+include::{snippets}/join/response-fields.adoc[]
+
+== 회원정보수정
+
+.Http Request
+include::{snippets}/member update/http-request.adoc[]
+.Http Request field
+include::{snippets}/member update/request-fields.adoc[]
+.Http Response field
+include::{snippets}/member update/response-fields.adoc[]
+
+== 회원정보삭제
+
+.Http Request
+include::{snippets}/member delete/http-request.adoc[]
+.Http Response field
+include::{snippets}/member delete/response-fields.adoc[]

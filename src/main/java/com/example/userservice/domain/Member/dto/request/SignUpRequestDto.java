@@ -5,6 +5,7 @@ import com.example.userservice.domain.auth.jwt.MemberRole;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -35,6 +36,12 @@ public class SignUpRequestDto {
     @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "올바른 전화번호를 입력해주세요.")
     private String phone;
 
+    @NotNull(message = "학번은 필수입니다.")
+    private Integer studentId;
+
+    @NotEmpty(message = "학과는 필수입니다.")
+    private String department;
+
     public Member toEntity() {
        return Member.builder()
                .password(password)
@@ -44,6 +51,8 @@ public class SignUpRequestDto {
                .phone(phone)
                .state(true)
                .memberRole(MemberRole.APPLY)
+               .studentId(studentId)
+               .department(department)
                .build();
     }
 

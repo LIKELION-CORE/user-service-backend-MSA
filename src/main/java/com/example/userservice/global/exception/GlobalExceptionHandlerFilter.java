@@ -28,7 +28,26 @@ public class GlobalExceptionHandlerFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+
+        try {
             filterChain.doFilter(request, response);
+        } catch (Exception ex) {
+            // Handle exceptions and set the error response
+            handleException(ex, response);
+        }
+    }
+
+
+
+    private void handleException(Exception ex, HttpServletResponse response) throws IOException {
+        if (ex instanceof NotFoundAccountException) {
+            setErrorResponse(response, ErrorCode.NOT_FOUND_ACCOUNT_EXCEPTION);
+        } else if (ex instanceof ExpiredJwtException) {
+            setErrorResponse(response, ErrorCode.INVALID_TOKEN_EXCEPTION);
+        } else {
+            // Handle other exceptions as needed
+            setErrorResponse(response, ErrorCode.UnAuthorizedException); // Create a generic error code
+        }
     }
 
     private void setErrorResponse(

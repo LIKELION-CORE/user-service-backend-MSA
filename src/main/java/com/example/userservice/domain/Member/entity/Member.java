@@ -32,9 +32,11 @@ public class Member extends BaseTimeEntity {
         private Boolean state;
         @Enumerated(EnumType.STRING)
         private MemberRole memberRole;
+        private Integer studentId;
+        private String department;
 
         @Builder
-        public Member(String email, String name, String userId, String password,String phone,boolean state,MemberRole memberRole) {
+        public Member(String email, String name, String userId, String password,String phone,boolean state,MemberRole memberRole,Integer studentId,String department) {
                 this.email = email;
                 this.name = name;
                 this.userId = userId;
@@ -42,6 +44,8 @@ public class Member extends BaseTimeEntity {
                 this.phone=phone;
                 this.state=state;
                 this.memberRole=memberRole;
+                this.studentId=studentId;
+                this.department=department;
         }
 
         public void updateMember(UpdateMemberRequesstDto updateMemberRequesstDto) {

@@ -1,0 +1,16 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+
+= 로그인
+:toc: left
+
+
+== 로그인
+.Http Request
+include::{snippets}/login/http-request.adoc[]
+.Http Request field
+include::{snippets}/login/request-fields.adoc[]
+
+.Http Response field
+include::{snippets}/login/response-fields.adoc[]
