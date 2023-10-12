@@ -67,6 +67,7 @@ public class SecurityConfig{
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/v1/member","/api/v1/member/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/member","/api/v1/member/health_check").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/mail").permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity.addFilterAfter(globalExceptionHandlerFilter,LogoutFilter.class);
