@@ -16,5 +16,4 @@ public class PasswordChangeMailDto {
     String name;
     //임시 비밀번호
     String temPassword;
-
 }
