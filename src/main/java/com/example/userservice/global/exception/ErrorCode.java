@@ -13,7 +13,8 @@ public enum ErrorCode {
     NOT_FOUND_ACCOUNT_EXCEPTION(HttpStatus.NOT_FOUND, "ACCOUNT_006","등록된 계정이 없음"),
     PASSWORD_NOT_MATCH(HttpStatus.UNAUTHORIZED,"ACCOUNT_007","비밀번호가 일치하지 않습니다"),
     REQUEST_PARAMETER_BIND_EXCEPTION(HttpStatus.BAD_REQUEST, "REQ_001", "PARAMETER_BIND_FAILED"),
-    UnAuthorizedException(HttpStatus.UNAUTHORIZED,"REQ_002","잘못된 접근입니다");
+    UnAuthorizedException(HttpStatus.UNAUTHORIZED,"REQ_002","잘못된 접근입니다"),
+    EMAIL_VALID_EXCEPTION(HttpStatus.NOT_FOUND,"REQ_003","인증번호가 유효하지않습니다");
 
 
     private final String code;

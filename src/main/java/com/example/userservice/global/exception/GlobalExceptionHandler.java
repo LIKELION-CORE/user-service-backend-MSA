@@ -66,6 +66,28 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     *
+     * 이메일 유효시간이 지났을 경우
+     */
+    @ExceptionHandler(EmailNotValidException.class)
+    protected ResponseEntity<CommonResponse> emailValidationException(EmailNotValidException ex) {
+        ErrorCode errorCode = ErrorCode.EMAIL_VALID_EXCEPTION;
+
+        ErrorResponse error = ErrorResponse.builder()
+                .status(errorCode.getStatus().value())
+                .message(errorCode.getMessage())
+                .code(errorCode.getCode())
+                .build();
+
+        CommonResponse response = CommonResponse.builder()
+                .success(false)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
+    /**
      * 리퀘스트 파라미터 바인딩이 실패했을때
      */
     @ExceptionHandler(BindException.class)

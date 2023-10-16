@@ -38,7 +38,6 @@ public class MemberServiceImpl implements MemberService {
         return CreateMemberResponseDto.builder()
                 .userId(savedMember.getUserId())
                 .phone(savedMember.getPhone())
-                .email(savedMember.getEmail())
                 .name(savedMember.getName())
                 .department(savedMember.getDepartment())
                 .studentId(savedMember.getStudentId())
@@ -94,9 +93,9 @@ public class MemberServiceImpl implements MemberService {
      * 회원등록
      */
     private Member registerMember(SignUpRequestDto signUpRequestDto){
-        signUpRequestDto.setPassword(bCryptPasswordEncoder.encode(signUpRequestDto.getPassword()));
+        String password=signUpRequestDto.getPassword();
+        signUpRequestDto.setPassword(bCryptPasswordEncoder.encode(password));
         Member member = signUpRequestDto.toEntity();
-
         return memberDao.insertMember(member);
     }
 
@@ -107,8 +106,6 @@ public class MemberServiceImpl implements MemberService {
     private void signupVaidate(SignUpRequestDto signUpRequestDto){
 
         String userId = signUpRequestDto.getUserId();
-
-
         if (memberDao.duplicateMemberCheck(userId).isPresent()) {
             throw new DuplicateAccountException("아이디 중복");
         }

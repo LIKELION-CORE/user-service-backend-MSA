@@ -65,9 +65,11 @@ public class SecurityConfig{
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), refreshTokenService, jwtProvider))
                 .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), memberService, jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/v1/member","/api/v1/member/login").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/member/**","/api/v1/member/login/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/member","/api/v1/member/health_check").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/mail").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/mail/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/mail/**").permitAll()
+
                 .anyRequest().authenticated();
 
         httpSecurity.addFilterAfter(globalExceptionHandlerFilter,LogoutFilter.class);
