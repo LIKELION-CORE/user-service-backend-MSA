@@ -2,15 +2,19 @@ package com.example.userservice.domain.Member.controller;
 import com.example.userservice.domain.Member.dto.request.MemberLoginRequestDto;
 import com.example.userservice.domain.Member.dto.request.SignUpRequestDto;
 import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
+import com.example.userservice.domain.Member.dto.response.CreateMemberResponseDto;
 import com.example.userservice.domain.Member.entity.Member;
 import com.example.userservice.domain.Member.restdoc.RestDocsBasic;
 import com.example.userservice.domain.Member.service.MemberService;
+import com.example.userservice.domain.Member.service.impl.MemberServiceImpl;
 import com.example.userservice.domain.auth.jwt.JwtProvider;
 import com.example.userservice.domain.auth.jwt.MemberRole;
+import com.example.userservice.global.common.CommonResDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,7 +33,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -58,17 +64,16 @@ class MemberControllerTest extends RestDocsBasic {
     EntityManager em;
 
     @MockBean
-    MemberService memberService;
+    MemberServiceImpl memberService;
     @Autowired
     JwtProvider jwtProvider;
 
     @BeforeEach
     public void beforeAll() {
         em.persist(Member.builder()
-                .userId("member1")
+                .userId("kbsserver@naver.com")
                 .password(new BCryptPasswordEncoder().encode("1234"))
                 .state(true)
-                .email("kbsserver@naver.com")
                 .name("민우")
                 .memberRole(MemberRole.APPLY)
                 .phone("010-1234-1234")
@@ -85,33 +90,37 @@ class MemberControllerTest extends RestDocsBasic {
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
                 .phone("010-1234-1234")
                 .name("김민우")
-                .email("kbsserver@naver.com")
                 .password("alsdn1234")
-                .userId("minwoo")
+                .userId("kbsserver@naver.com")
                 .department("ict공학부")
                 .studentId(123412341)
                 .build();
 
-        Map<String, String> input = new HashMap<>();
-        input.put("phone", "010-1234-1234");
-        input.put("name", "김민우");
-        input.put("email", "kbsserver@naver.com");
-        input.put("password", "alsdn1234");
-        input.put("userId","minwoo");
-        input.put("department","ict공학부");
-        input.put("studentId","123412341");
+        CreateMemberResponseDto createMemberResponseDto = CreateMemberResponseDto.builder()
+                .phone("010-1234-1234")
+                .name("김민우")
+                .userId("kbsserver@naver.com")
+                .department("ict공학부")
+                .studentId(123412341)
+                .build();
 
+
+        Mockito.when(memberService.createMember(signUpRequestDto)).thenReturn(createMemberResponseDto);
         String url = "/api/v1/member";
         
 
         //when
         mockMvc.perform(RestDocumentationRequestBuilders.post(url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(input))
+                        .content(objectMapper.writeValueAsString(signUpRequestDto))
                         .with(csrf())
                 )
                 //then
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath(
+                        "$.code").exists())
+                .andExpect(jsonPath("$.message").exists())
+//                .andExpect(jsonPath("$.data").exists())
                 .andDo(print())
 
                 //docs
@@ -131,6 +140,8 @@ class MemberControllerTest extends RestDocsBasic {
                                 subsectionWithPath("data").description("응답 데이터")
                         )
                 ));
+
+        verify(memberService).createMember(signUpRequestDto);
     }
 
     @Test

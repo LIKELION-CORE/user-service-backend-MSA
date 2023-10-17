@@ -1,4 +1,4 @@
-package com.example.userservice.domain.Mail.dto;
+package com.example.userservice.domain.Mail.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

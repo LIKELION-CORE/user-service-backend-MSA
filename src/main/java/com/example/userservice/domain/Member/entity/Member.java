@@ -17,9 +17,6 @@ public class Member extends BaseTimeEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-
-        @Column(nullable = false, length = 50)
-        private String email;
         @Column(nullable = false, length = 50)
         private String name;
         @Column(nullable = false, unique = true)
@@ -36,8 +33,7 @@ public class Member extends BaseTimeEntity {
         private String department;
 
         @Builder
-        public Member(String email, String name, String userId, String password,String phone,boolean state,MemberRole memberRole,Integer studentId,String department) {
-                this.email = email;
+        public Member(String name, String userId, String password,String phone,boolean state,MemberRole memberRole,Integer studentId,String department) {
                 this.name = name;
                 this.userId = userId;
                 this.password = password;
@@ -46,6 +42,10 @@ public class Member extends BaseTimeEntity {
                 this.memberRole=memberRole;
                 this.studentId=studentId;
                 this.department=department;
+        }
+
+        public void updatePassword(String password) {
+                this.password = password;
         }
 
         public void updateMember(UpdateMemberRequesstDto updateMemberRequesstDto) {

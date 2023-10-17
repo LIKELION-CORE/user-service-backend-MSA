@@ -3,6 +3,7 @@ package com.example.userservice.domain.Member.controller;
 
 import com.example.userservice.domain.Member.dto.request.SignUpRequestDto;
 import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
+import com.example.userservice.domain.Member.dto.response.CreateMemberResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberInfoResponseDto;
 import com.example.userservice.domain.Member.service.MemberService;
 import com.example.userservice.global.common.CommonResDto;
@@ -30,7 +31,7 @@ public class MemberController {
 
 
     @PostMapping("")
-    public ResponseEntity<?> createMember(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
+    public ResponseEntity<CommonResDto<CreateMemberResponseDto>> createMember(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
 
         log.info("회원가입 진행 중");
         return new ResponseEntity<>(new CommonResDto<>(1,"회원생성완료",memberService.createMember(signUpRequestDto)), HttpStatus.CREATED);
