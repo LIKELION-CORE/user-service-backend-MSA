@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             throw new NotFoundAccountException("계정이 존재하지 않습니다.");
         }
 
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(memberLoginRequestDto.getUsername(), memberLoginRequestDto.getPassword());
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(memberLoginRequestDto.getUserId(), memberLoginRequestDto.getPassword());
         Authentication authentication = null;
         authentication = this.getAuthenticationManager().authenticate(usernamePasswordAuthenticationToken);
 

@@ -25,9 +25,12 @@ public class MailSenderController {
     public MailSenderController(MailSenderService mailSenderService) {
         this.mailSenderService = mailSenderService;
     }
-
-
-    @GetMapping()
+    @PostMapping("/pass-fail")
+    public void passOrFailSendEail(@RequestBody SendMailDto sendMailDto) throws MessagingException {
+        log.info("합불 이메일 전송");
+        mailSenderService.sendPassOrFailSendEmail(sendMailDto);
+    }
+    @PostMapping()
     public void sendEail(@RequestBody SendMailDto sendMailDto) throws MessagingException {
         log.info("이메일 전송");
         mailSenderService.sendRandomNumberToMail(sendMailDto);
@@ -41,7 +44,7 @@ public class MailSenderController {
         }catch (Exception e){
             throw new EmailNotValidException();
         }
-        return new ResponseEntity<>(new CommonResDto<>(1, "임시 비밀번호 생성완료",""), HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto<>(1, "이메일 검증이 완료되었습니다.",""), HttpStatus.OK);
 
     }
 

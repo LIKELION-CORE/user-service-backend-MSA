@@ -7,6 +7,7 @@ import com.example.userservice.domain.Member.entity.Member;
 import com.example.userservice.domain.Member.repository.MemberRepository;
 import com.example.userservice.domain.Member.service.MemberService;
 import com.example.userservice.domain.auth.jwt.MemberRole;
+import com.example.userservice.global.common.CommonResDto;
 import com.example.userservice.global.exception.error.DuplicateAccountException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,11 +42,10 @@ class MemberServiceImplTest {
         SignUpRequestDto signUpRequestDto = createMemberThenReturnDto();
 
         //when
-        CreateMemberResponseDto createMemberResponseDto = memberService.createMember(signUpRequestDto);
+        CommonResDto<CreateMemberResponseDto> member = memberService.createMember(signUpRequestDto);
         //then
-        assertThat(createMemberResponseDto.getUserId()).isNotNull();
-        assertThat(createMemberResponseDto.getEmail()).isEqualTo("kbsserver@naver.com");
-        assertThat(createMemberResponseDto.getName()).isEqualTo("김민우");
+        assertThat(member.getData().getUserId()).isNotNull();
+        assertThat(member.getData().getName()).isEqualTo("김민우");
 
 
     }
@@ -77,7 +77,7 @@ class MemberServiceImplTest {
         Member member = createMemberThenReturnMemberEntity();
         Member savedMember = memberRepository.save(member);
 
-        UpdateMemberRequesstDto updateMemberRequesstDto = updateMemberThenReturnDto("010-4094-1234","김민우","1234",MemberRole.LION);
+        UpdateMemberRequesstDto updateMemberRequesstDto = updateMemberThenReturnDto("010-4094-1234","kbsserver@naver.com","1234",MemberRole.LION,202184007);
 
         //when
         savedMember.updateMember(updateMemberRequesstDto);
@@ -105,14 +105,17 @@ class MemberServiceImplTest {
     }
 
     private static UpdateMemberRequesstDto updateMemberThenReturnDto(String phone,
-                                                                     String name,
+                                                                     String email,
                                                                      String password,
-                                                                     MemberRole memberRole) {
+                                                                     MemberRole memberRole,
+                                                                     Integer studentId
+        ) {
         UpdateMemberRequesstDto updateMemberRequesstDto = UpdateMemberRequesstDto.builder()
                 .phone(phone)
-                .name(name)
-                .password(password)
+                .email(email)
+                .department(password)
                 .memberRole(memberRole)
+                .studentId(studentId)
                 .build();
         return updateMemberRequesstDto;
     }
@@ -120,9 +123,8 @@ class MemberServiceImplTest {
         return SignUpRequestDto.builder()
                 .phone("010-1234-1234")
                 .name("김민우")
-                .email("kbsserver@naver.com")
                 .password("1234")
-                .userId("minwoo")
+                .email("kbsserver@naver.com")
                 .build();
 
     }
@@ -131,9 +133,8 @@ class MemberServiceImplTest {
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
                 .phone("010-1234-1234")
                 .name("김민우")
-                .email("kbsserver@naver.com")
                 .password("1234")
-                .userId("minwoo")
+                .email("kbsserver@naver.com")
                 .build();
         return signUpRequestDto.toEntity();
     }

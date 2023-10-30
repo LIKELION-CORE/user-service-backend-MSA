@@ -1,10 +1,12 @@
 package com.example.userservice.global.common;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @Getter
+@Setter
 public class CommonResDto<T>{
     private int code; // 1(성공),-1(실패)
     private String message;

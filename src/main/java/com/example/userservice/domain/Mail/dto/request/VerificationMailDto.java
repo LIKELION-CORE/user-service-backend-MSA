@@ -10,4 +10,6 @@ public class VerificationMailDto {
     //보내려는 사람의 email
     String email;
     String randomNumber;
+    String emailPurpose;
+
 }

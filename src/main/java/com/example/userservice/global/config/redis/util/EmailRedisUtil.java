@@ -22,9 +22,9 @@ public class EmailRedisUtil {
     public boolean existData(String key) {
         return stringRedisTemplate.hasKey(key);
     }
-    public void setListData(String key, Integer value,long duration) {
+    public void setListData(String key, Integer value,String verifyPurpose,long duration) {
         ListOperations<String, String> listOperations = stringRedisTemplate.opsForList();
-        String data = value.toString() + "|" + duration;
+        String data = value.toString() + "|"+verifyPurpose+"|" + duration;
         Duration expireDuration = Duration.ofSeconds(duration);
         listOperations.leftPush(key, data);
         stringRedisTemplate.expire(key, expireDuration);

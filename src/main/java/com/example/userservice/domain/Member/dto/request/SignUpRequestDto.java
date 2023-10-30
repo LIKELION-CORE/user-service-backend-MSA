@@ -11,15 +11,15 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class SignUpRequestDto {
 
 
     @NotEmpty(message = "이메일 인증은 필수입니다.")
     @Pattern(regexp = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", message = "이메일 형식이 맞지 않습니다.")
-    private String userId;
+    private String email;
 
     @NotEmpty(message = "비밀번호 설정은 필수입니다.")
     @Size(min = 8, max = 64, message = "비밀번호를 8~64글자의 영문+숫자 조합으로 설정해주세요.")
@@ -42,7 +42,7 @@ public class SignUpRequestDto {
     public Member toEntity() {
        return Member.builder()
                .password(password)
-               .userId(userId)
+               .userId(email)
                .name(name)
                .phone(phone)
                .state(true)

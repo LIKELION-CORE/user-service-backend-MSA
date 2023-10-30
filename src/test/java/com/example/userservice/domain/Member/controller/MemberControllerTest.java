@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -32,6 +33,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +46,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -57,6 +60,7 @@ class MemberControllerTest extends RestDocsBasic {
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -85,17 +89,17 @@ class MemberControllerTest extends RestDocsBasic {
     @DisplayName("회원가입 테스트")
     @Test
     void test() throws Exception {
-
         // given
+
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
                 .phone("010-1234-1234")
                 .name("김민우")
                 .password("alsdn1234")
-                .userId("kbsserver@naver.com")
+                .email("kbsserver@naver.com")
                 .department("ict공학부")
                 .studentId(123412341)
                 .build();
-
+//
         CreateMemberResponseDto createMemberResponseDto = CreateMemberResponseDto.builder()
                 .phone("010-1234-1234")
                 .name("김민우")
@@ -104,32 +108,34 @@ class MemberControllerTest extends RestDocsBasic {
                 .studentId(123412341)
                 .build();
 
-
-        Mockito.when(memberService.createMember(signUpRequestDto)).thenReturn(createMemberResponseDto);
+        CommonResDto<CreateMemberResponseDto> tmp = new CommonResDto<>(1, "회원생성완료",createMemberResponseDto);
+        Mockito.when(memberService.createMember(any())).thenReturn(tmp);
         String url = "/api/v1/member";
-        
+
 
         //when
         mockMvc.perform(RestDocumentationRequestBuilders.post(url)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signUpRequestDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .with(csrf())
                 )
                 //then
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath(
-                        "$.code").exists())
-                .andExpect(jsonPath("$.message").exists())
-//                .andExpect(jsonPath("$.data").exists())
                 .andDo(print())
+                .andExpect(jsonPath("$.code").value(1))
+                .andExpect(jsonPath("$.message").value("회원생성완료"))
+                .andExpect(jsonPath("$.data.phone").value("010-1234-1234"))
+                .andExpect(jsonPath("$.data.name").value("김민우"))
+                .andExpect(jsonPath("$.data.userId").value("kbsserver@naver.com"))
+                .andExpect(jsonPath("$.data.department").value("ict공학부"))
+                .andExpect(jsonPath("$.data.studentId").value(123412341))
 
                 //docs
                 .andDo(document("join",
                         requestFields(
-                                fieldWithPath("userId").description("계정 아이디입력하는 필드"),
+                                fieldWithPath("email").description("계정 아이디입력하는 필드"),
                                 fieldWithPath("password").description("계정 비밀번호 입력하는 필드"),
                                 fieldWithPath("name").description("실명을 입력하는 필드"),
-                                fieldWithPath("email").description("이메일을 입력하는 필드"),
                                 fieldWithPath("phone").description("전화번호를 입력하는 필드"),
                                 fieldWithPath("studentId").description("학번을 입력하는 필드"),
                                 fieldWithPath("department").description("학과를 입력하는 필드")
@@ -141,7 +147,9 @@ class MemberControllerTest extends RestDocsBasic {
                         )
                 ));
 
-        verify(memberService).createMember(signUpRequestDto);
+
+
+        verify(memberService).createMember(any());
     }
 
     @Test
@@ -153,8 +161,9 @@ class MemberControllerTest extends RestDocsBasic {
 
         UpdateMemberRequesstDto updateMemberRequesstDto = UpdateMemberRequesstDto.builder()
                 .memberRole(MemberRole.LION)
-                .name("민우")
-                .password("alsdn12345")
+                .email("kbsserver@naver.com")
+                .studentId(202184007)
+                .department("ICT공학부")
                 .phone("010-1234-1234")
                 .build();
 
@@ -166,8 +175,9 @@ class MemberControllerTest extends RestDocsBasic {
                 .andExpect(status().isOk())
                 .andDo(document("member update",
                         requestFields(
-                                fieldWithPath("name").description("이름 입력하는 필드"),
-                                fieldWithPath("password").description("계정 비밀번호 입력하는 필드"),
+                                fieldWithPath("email").description("이메일 입력하는 필드"),
+                                fieldWithPath("studentId").description("학번 입력하는 필드"),
+                                fieldWithPath("department").description("학과 입력하는 필드"),
                                 fieldWithPath("phone").description("전화번호을 입력하는 필드"),
                                 fieldWithPath("memberRole").description("역할 입력하는 필드")
                         ),
@@ -207,13 +217,13 @@ class MemberControllerTest extends RestDocsBasic {
     @DisplayName("로그인 후 토큰이 정상적으로 발급이 되는지 확인한다.")
     public void usernamePasswordLogin() throws Exception {
         // given
-        String username = "member1";
+        String username = "kbsserver@naver.com";
         String password = "1234";
 
         String url = "/api/v1/member/login";
 
         MemberLoginRequestDto memberLoginRequestDto = MemberLoginRequestDto.builder()
-                .username(username)
+                .userId(username)
                 .password(password)
                 .build();
         // when then
@@ -226,7 +236,7 @@ class MemberControllerTest extends RestDocsBasic {
                 .andDo(print())
                 .andDo(document("login",
                         requestFields(
-                                fieldWithPath("username").description("사용자 아이디"),
+                                fieldWithPath("userId").description("사용자 아이디"),
                                 fieldWithPath("password").description("사용자 비밀번호")
                         ),
                         responseFields(
