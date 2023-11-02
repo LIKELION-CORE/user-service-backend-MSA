@@ -60,15 +60,19 @@ public class SecurityConfig{
                 .and()
                 .formLogin().disable() // 초기 로그인화면 자동생성 안함
                 .csrf().disable() // rest api 에서 csrf 방어 필요 없음
-                .cors().configurationSource(corsConfigurationSource()).and() // cors
+//                .cors().configurationSource(corsConfigurationSource()).and() // cors
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()// 세션 생성 안함 , response 에 setcookie jsessionId= ... 안함
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), refreshTokenService, jwtProvider))
                 .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), memberService, jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/v1/member/**","/api/v1/member/login/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/member","/api/v1/member/health_check").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/mail/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/mail/**").permitAll()
+//                .antMatchers(HttpMethod.POST, "/api/v1/member/**","/api/v1/member/login/**").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/v1/member","/api/v1/member/health_check").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/v1/mail/**").permitAll()
+//                .antMatchers(HttpMethod.POST, "/api/v1/mail/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/**").permitAll()
+                .antMatchers(HttpMethod.PUT, "/**").permitAll()
+                .antMatchers(HttpMethod.DELETE, "/**").permitAll()
 
                 .anyRequest().authenticated();
 
@@ -76,19 +80,19 @@ public class SecurityConfig{
         return httpSecurity.build();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.addAllowedOriginPattern("*"); // A list of origins for which cross-origin requests are allowed. ex) http://localhost:8080
-        configuration.addAllowedHeader("*"); // Set the HTTP methods to allow ,ex) "GET", "POST", "PUT";
-        configuration.addAllowedMethod("*"); // Set the list of headers that a pre-flight request can list as allowed for use during an actual request. ex) "Authorization", "Cache-Control", "Content-Type"
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//
+//        configuration.addAllowedOriginPattern("*"); // A list of origins for which cross-origin requests are allowed. ex) http://localhost:8080
+//        configuration.addAllowedHeader("*"); // Set the HTTP methods to allow ,ex) "GET", "POST", "PUT";
+//        configuration.addAllowedMethod("*"); // Set the list of headers that a pre-flight request can list as allowed for use during an actual request. ex) "Authorization", "Cache-Control", "Content-Type"
+//        configuration.setAllowCredentials(true);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
     public void configure(WebSecurity webSecurity){
         webSecurity.ignoring().antMatchers("/v2/api-docs"

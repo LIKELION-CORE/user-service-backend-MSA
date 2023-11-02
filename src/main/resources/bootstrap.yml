@@ -1,25 +1,25 @@
 
-#spring:
-#  cloud:
-#    config:
-#      uri: http://api.likelion-apply.org:8888
-#      name: user-service # yml 파일명 써주면 된다.
-#  profiles:
-#    active: dev
-#  thymeleaf:
-#    prefix: classpath:/templates/
-#    suffix: .html
-#    mode: HTML
-#    encoding: UTF-8
-#    check-template: true
-#    cache: false
 spring:
   cloud:
     config:
-      uri: http://config-service-backend-msa-config-server-1:8888
+      uri: http://api.likelion-apply.org:8888
       name: user-service # yml 파일명 써주면 된다.
   profiles:
-    active: prod
+    active: dev
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    check-template: true
+    cache: false
+#spring:
+#  cloud:
+#    config:
+#      uri: http://config-service-backend-msa-config-server-1:8888
+#      name: user-service # yml 파일명 써주면 된다.
+#  profiles:
+#    active: prod
 #
 #
 ###

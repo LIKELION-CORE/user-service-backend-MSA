@@ -69,7 +69,13 @@ public class MailSenderServiceImpl implements MailSenderService {
         //helper.addInline("image2", new ClassPathResource("templates/images/.jpg"));
         //메일 보내기
         javaMailSender.send(message);
-        emailRedisUtil.setListData(email,randomNumber,verifyPurpose,60*3L);
+        // 기존에 데이터가 있다면
+        if(emailRedisUtil.existData(email)){
+            emailRedisUtil.deleteData(email);
+            emailRedisUtil.setListData(email,randomNumber,verifyPurpose,60*3L);
+        }else{
+            emailRedisUtil.setListData(email,randomNumber,verifyPurpose,60*3L);
+        }
     }
 
     @Override
@@ -83,8 +89,7 @@ public class MailSenderServiceImpl implements MailSenderService {
         String[] splitInfo = info.get(0).split("\\|");
         String verificationCode = splitInfo[0];
         String redisVerifyPurpose = splitInfo[1];
-
-        if(info.isEmpty() || info.get(0)==null || !Objects.equals(verifyPurpose, redisVerifyPurpose)){
+        if(info.isEmpty() || !Objects.equals(verificationCode, verificationMailDto.getRandomNumber()) || !Objects.equals(verifyPurpose, redisVerifyPurpose)){
             throw new EmailNotValidException("인증이 유효하지 않습니다");
         }
 
