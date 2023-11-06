@@ -9,6 +9,7 @@ import com.example.userservice.domain.Member.service.MemberService;
 import com.example.userservice.domain.auth.jwt.MemberRole;
 import com.example.userservice.global.common.CommonResDto;
 import com.example.userservice.global.exception.error.DuplicateAccountException;
+import com.example.userservice.global.exception.error.EmailNotValidException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,19 +35,16 @@ class MemberServiceImplTest {
         memberRepository.deleteAllInBatch();
     }
 
-    @DisplayName("비회원 유저가 회원가입을 실시한다.")
+    @DisplayName("이메일 인증을 하지않고 회원가입을 하면 회원가입은 실패한다.")
     @Test
     void signUp(){
 
         //given
         SignUpRequestDto signUpRequestDto = createMemberThenReturnDto();
 
-        //when
-        CommonResDto<CreateMemberResponseDto> member = memberService.createMember(signUpRequestDto);
-        //then
-        assertThat(member.getData().getUserId()).isNotNull();
-        assertThat(member.getData().getName()).isEqualTo("김민우");
-
+        //when //then
+        assertThatThrownBy(()-> memberService.createMember(signUpRequestDto))
+                .isInstanceOf(EmailNotValidException.class);
 
     }
 
