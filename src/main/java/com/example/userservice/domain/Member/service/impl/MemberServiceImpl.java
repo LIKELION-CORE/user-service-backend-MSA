@@ -79,6 +79,7 @@ public class MemberServiceImpl implements MemberService {
 
     private void emailVerifyCheck(SignUpRequestDto signUpRequestDto) {
         log.info("회원가입 이메일 검증 중");
+
         List<String> data = emailRedisUtil.getData(signUpRequestDto.getEmail());
         if (data.isEmpty()){
             throw new EmailNotValidException();
