@@ -41,11 +41,15 @@ public class MemberController {
     @PostMapping("/renew-access-token")
     public ResponseEntity renewAccessToken(@RequestBody MemberRenewAccessTokenRequestDto memberRenewAccessTokenRequestDto, HttpServletResponse response, Authentication authentication) {
         String accessToken = memberService.renewAccessToken(memberRenewAccessTokenRequestDto.getRefreshToken(),authentication);
+        String refreshToken = jwtProvider.generateRefreshToken(authentication.getName(), authentication);
         CookieUtil.addCookie(response, "accessToken", accessToken, jwtProvider.ACCESS_TOKEN_EXPIRATION_TIME);
+        CookieUtil.addCookie(response,"refreshToken", refreshToken,jwtProvider.REFRESH_TOKEN_EXPIRATION_TIME);
 
         // token body comment
         return ResponseEntity.ok(MemberRenewAccessTokenResponseDto.builder()
-                .accessToken(accessToken).build()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build()
         );
     }
     @PostMapping("")

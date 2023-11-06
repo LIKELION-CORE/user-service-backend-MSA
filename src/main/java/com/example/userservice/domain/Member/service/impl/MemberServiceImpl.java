@@ -99,6 +99,11 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberDao.findMemberByUserId(userId);
         return MemberInfoResponseDto.builder()
                 .id(member.getId())
+                .email(member.getUserId())
+                .department(member.getDepartment())
+                .phone(member.getPhone())
+                .name(member.getName())
+                .studentId(member.getStudentId())
                 .build();
     }
 

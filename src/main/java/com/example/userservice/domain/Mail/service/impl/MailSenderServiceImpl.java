@@ -41,7 +41,7 @@ public class MailSenderServiceImpl implements MailSenderService {
 
     @Override
     @Async
-    public void sendRandomNumberToMail(SendMailDto sendMailDto) throws MessagingException {
+    public void sendMail(SendMailDto sendMailDto) throws MessagingException {
         String email=sendMailDto.getEmail();
         Integer randomNumber=getVerificationNumber();
         String verifyPurpose = sendMailDto.getEmailPurpose();
@@ -70,12 +70,15 @@ public class MailSenderServiceImpl implements MailSenderService {
         //메일 보내기
         javaMailSender.send(message);
         // 기존에 데이터가 있다면
-        if(emailRedisUtil.existData(email)){
-            emailRedisUtil.deleteData(email);
-            emailRedisUtil.setListData(email,randomNumber,verifyPurpose,60*3L);
-        }else{
-            emailRedisUtil.setListData(email,randomNumber,verifyPurpose,60*3L);
+        if(!Objects.equals(verifyPurpose, MailPurpose.START_NOTIFICATION.toString())){
+            if(emailRedisUtil.existData(email)){
+                emailRedisUtil.deleteData(email);
+                emailRedisUtil.setListData(email,randomNumber,verifyPurpose,60*3L);
+            }else{
+                emailRedisUtil.setListData(email,randomNumber,verifyPurpose,60*3L);
+            }
         }
+
     }
 
     @Override

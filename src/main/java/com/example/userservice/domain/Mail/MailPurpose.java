@@ -5,5 +5,6 @@ public enum MailPurpose {
     SIGNUP, // 회원가입
     FIRST_PASS, //1차 합
     MISMATCH, // 불합
-    MATCH // 최종 합
+    MATCH, // 최종 합
+    START_NOTIFICATION // 공고 시작 알림
 }
