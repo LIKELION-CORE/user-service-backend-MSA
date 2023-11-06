@@ -33,7 +33,7 @@ public class MailSenderController {
     @PostMapping()
     public void sendEail(@RequestBody SendMailDto sendMailDto) throws MessagingException {
         log.info("이메일 전송");
-        mailSenderService.sendRandomNumberToMail(sendMailDto);
+        mailSenderService.sendMail(sendMailDto);
     }
 
     @PostMapping("/verify")
