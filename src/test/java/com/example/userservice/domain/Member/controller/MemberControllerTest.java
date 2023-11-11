@@ -226,12 +226,10 @@ class MemberControllerTest extends RestDocsBasic {
                                 fieldWithPath("password").description("사용자 비밀번호")
                         ),
                         responseFields(
-                                fieldWithPath("accessToken").description("액세스 토큰"),
-                                fieldWithPath("refreshToken").description("리프레시 토큰")
+                                fieldWithPath("accessToken").description("액세스 토큰")
+//                                fieldWithPath("refreshToken").description("리프레시 토큰")
                         )
                 )).andExpect(
-                        cookie().exists("accessToken")
-                ).andExpect(
                         cookie().exists("refreshToken")
                 );
     }
