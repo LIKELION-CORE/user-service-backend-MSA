@@ -10,11 +10,9 @@ import lombok.NoArgsConstructor;
 public class MemberLoginResponseDto {
 
     String accessToken;
-    String refreshToken;
 
     @Builder
-    public MemberLoginResponseDto(String accessToken, String refreshToken) {
+    public MemberLoginResponseDto(String accessToken) {
         this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
     }
 }

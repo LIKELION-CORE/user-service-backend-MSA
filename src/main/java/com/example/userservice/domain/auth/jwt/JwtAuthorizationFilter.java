@@ -41,7 +41,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String username = null;
-            username = jwtProvider.getUserId(request);
+        username = jwtProvider.getUserId(request);
 
         if (username != null) {
             log.info("username = " + username);

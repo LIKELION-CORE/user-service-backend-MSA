@@ -73,7 +73,7 @@ public class SecurityConfig{
                 .antMatchers(HttpMethod.GET, "/**").permitAll()
                 .antMatchers(HttpMethod.PUT, "/**").permitAll()
                 .antMatchers(HttpMethod.DELETE, "/**").permitAll()
-
+                .antMatchers(HttpMethod.POST, "/api/v1/member/renew-access-token").permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity.addFilterAfter(globalExceptionHandlerFilter,LogoutFilter.class);

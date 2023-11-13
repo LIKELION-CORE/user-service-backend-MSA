@@ -47,23 +47,23 @@ public class GlobalExceptionHandler {
     /**
      * 계정 주요 정보의 암호화 과정이 실패 했을때
      */
-    @ExceptionHandler(EncryptException.class)
-    protected ResponseEntity<CommonResponse> handleEncryptException(EncryptException ex) {
-        ErrorCode errorCode = ErrorCode.ENCRYPT_FAILED_EXCEPTION;
-
-        ErrorResponse error = ErrorResponse.builder()
-                .status(errorCode.getStatus().value())
-                .message(errorCode.getMessage())
-                .code(errorCode.getCode())
-                .build();
-
-        CommonResponse response = CommonResponse.builder()
-                .success(false)
-                .error(error)
-                .build();
-
-        return new ResponseEntity<>(response, errorCode.getStatus());
-    }
+//    @ExceptionHandler(EncryptException.class)
+//    protected ResponseEntity<CommonResponse> handleEncryptException(EncryptException ex) {
+//        ErrorCode errorCode = ErrorCode.ENCRYPT_FAILED_EXCEPTION;
+//
+//        ErrorResponse error = ErrorResponse.builder()
+//                .status(errorCode.getStatus().value())
+//                .message(errorCode.getMessage())
+//                .code(errorCode.getCode())
+//                .build();
+//
+//        CommonResponse response = CommonResponse.builder()
+//                .success(false)
+//                .error(error)
+//                .build();
+//
+//        return new ResponseEntity<>(response, errorCode.getStatus());
+//    }
 
     /**
      *
