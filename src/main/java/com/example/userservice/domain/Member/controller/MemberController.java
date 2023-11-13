@@ -1,9 +1,7 @@
 package com.example.userservice.domain.Member.controller;
 
 
-import com.example.userservice.domain.Member.dto.request.MemberRenewAccessTokenRequestDto;
-import com.example.userservice.domain.Member.dto.request.SignUpRequestDto;
-import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
+import com.example.userservice.domain.Member.dto.request.*;
 import com.example.userservice.domain.Member.dto.response.CreateMemberResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberInfoResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberRenewAccessTokenResponseDto;
@@ -16,6 +14,7 @@ import com.example.userservice.domain.auth.service.RefreshTokenService;
 import com.example.userservice.global.common.CommonResDto;
 import com.example.userservice.global.exception.error.InvalidTokenException;
 import com.example.userservice.global.exception.error.NotFoundAccountException;
+import com.example.userservice.global.exception.error.UnAuthorizedException;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,19 +22,22 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -57,14 +59,15 @@ public class MemberController {
 
         String cookieRefreshToken = CookieUtil.getRefreshTokenCookie(request);
         log.info("before renew refreshToken : "+cookieRefreshToken);
-
-        String usernameFromToken = jwtProvider.getUsernameFromToken(cookieRefreshToken);
-        Member member = memberService.findMemberByUserId(usernameFromToken);
-        MemberDetails memberDetails = new MemberDetails(member);
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(memberDetails, null, null);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        
         try{
+
+            Authentication authentication = jwtProvider.getAuthentication(cookieRefreshToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            if (authentication == null || !authentication.isAuthenticated()) {
+                throw new AuthenticationCredentialsNotFoundException("User not authenticated");
+            }
+
             jwtProvider.verifyToken(cookieRefreshToken);
 
             String accessToken = memberService.renewAccessToken(cookieRefreshToken,authentication);
@@ -80,8 +83,6 @@ public class MemberController {
         }catch (InvalidTokenException invalidTokenException){
             throw new InvalidTokenException("토큰이 유효하지않습니다");
         }
-
-
     }
 
     @PostMapping("")
@@ -97,15 +98,50 @@ public class MemberController {
         );
     }
     @PutMapping("")
-    public ResponseEntity<?> updateMember(Principal principal,@Valid @RequestBody UpdateMemberRequesstDto updateMemberRequesstDto) {
+    public ResponseEntity<?> updateMember(Principal principal,
+                                          @Valid @RequestBody UpdateMemberRequesstDto updateMemberRequesstDto) {
 
         log.info("회원수정 진행 중");
         if(principal==null){
             throw new NotFoundAccountException("유저를 찾을 수 없습니다");
         }
+
         memberService.updateMember(principal.getName(),updateMemberRequesstDto);
         return new ResponseEntity<>(new CommonResDto<>(1,"회원수정완료",""), HttpStatus.OK);
     }
+
+    @PutMapping("/admin/update")
+    public ResponseEntity<?> updateMemberByAdmin(Principal principal,
+                                          HttpServletRequest request,
+                                          @Valid @RequestBody UpdateMemberByAdminRequestDto updateMemberByAdminRequestDto) {
+
+        log.info("관리자 회원수정 진행 중");
+        if(principal==null){
+            throw new NotFoundAccountException("유저를 찾을 수 없습니다");
+        }
+        String refreshTokenCookie = CookieUtil.getRefreshTokenCookie(request);
+        List<String> rolesFromToken = jwtProvider.getRolesFromToken(refreshTokenCookie);
+
+        if(rolesFromToken.contains("ROOT") || rolesFromToken.contains("ADMIN")){
+
+            memberService.updateMemberByAdmin(principal.getName(),updateMemberByAdminRequestDto);
+        }else{
+            throw new UnAuthorizedException("권한이 없습니다");
+        }
+        return new ResponseEntity<>(new CommonResDto<>(1,"회원수정완료",""), HttpStatus.OK);
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<?> updateMemberPassword(Principal principal,
+                                                 @Valid @RequestBody UpdateMemberPasswordRequestDto updateMemberPasswordRequestDto) {
+        if(principal==null){
+            throw new NotFoundAccountException("유저를 찾을 수 없습니다");
+        }
+        memberService.memberPasswordUpdate(principal.getName(),updateMemberPasswordRequestDto);
+        return new ResponseEntity<>(new CommonResDto<>(1,"패스워드수정완료",""), HttpStatus.OK);
+    }
+
+
 
     @DeleteMapping("")
     public ResponseEntity<?> deleteMember(Principal principal) {

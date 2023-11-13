@@ -4,8 +4,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +43,6 @@ public class JwtProvider {
                 .sign(Algorithm.HMAC512(SECRET_KEY));
     }
     public String generateRefreshToken(String username, Authentication authentication) {
-
         List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
@@ -81,5 +83,24 @@ public class JwtProvider {
                 .build()
                 .verify(token)
                 .getClaim("username").asString();
+    }
+    public List<String> getRolesFromToken(String token) {
+        return JWT.require(Algorithm.HMAC512(SECRET_KEY))
+                .build()
+                .verify(token)
+                .getClaim("ROLE")
+                .asList(String.class);
+    }
+    public Authentication getAuthentication(String token) {
+        String username = getUsernameFromToken(token);
+        List<String> roles = getRolesFromToken(token);
+
+        List<SimpleGrantedAuthority> authorities = roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        User principal = new User(username, "", authorities);
+
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 }

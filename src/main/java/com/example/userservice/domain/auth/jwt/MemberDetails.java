@@ -4,6 +4,7 @@ import com.example.userservice.domain.Member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -17,12 +18,16 @@ public class MemberDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         log.info("MemberDetails.getAuthorities");
-        Collection<GrantedAuthority> collection=new ArrayList<>();
-        collection.add(()->{
-            return String.valueOf(member.getMemberRole());
-        });
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
 
-        return collection;
+        // Assuming getMemberRole() returns a String representing the role
+        MemberRole memberRole = member.getMemberRole();
+
+        // Add the actual role as a GrantedAuthority
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(memberRole.toString());
+        authorities.add(authority);
+
+        return authorities;
     }
 
     @Override

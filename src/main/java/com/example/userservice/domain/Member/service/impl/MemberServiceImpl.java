@@ -1,6 +1,8 @@
 package com.example.userservice.domain.Member.service.impl;
 
 import com.example.userservice.domain.Member.dto.request.SignUpRequestDto;
+import com.example.userservice.domain.Member.dto.request.UpdateMemberByAdminRequestDto;
+import com.example.userservice.domain.Member.dto.request.UpdateMemberPasswordRequestDto;
 import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
 import com.example.userservice.domain.Member.dto.response.CreateMemberResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberInfoResponseDto;
@@ -51,6 +53,31 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return jwtProvider.generateAccessToken(username,authentication);
+    }
+
+    @Transactional
+    public Long updateMemberByAdmin(String userId, UpdateMemberByAdminRequestDto updateMemberByAdminRequestDto) {
+        String targetUserId=updateMemberByAdminRequestDto.getUserId();
+        Member member = memberDao.findMemberByUserId(targetUserId);
+        member.updateMemberByAdmin(updateMemberByAdminRequestDto);
+        return member.getId();
+    }
+
+    @Override
+    @Transactional
+    public Long memberPasswordUpdate(String name, UpdateMemberPasswordRequestDto updateMemberPasswordRequestDto) {
+        String currentPassword= updateMemberPasswordRequestDto.getCureentPassword();
+        String changePassword= updateMemberPasswordRequestDto.getChangePassword();
+
+        Member member = memberDao.findMemberByUserId(name);
+        boolean passwordValidationCheck = passwordValidationCheck(currentPassword, member);
+        if(passwordValidationCheck){
+            member.updatePassword(new BCryptPasswordEncoder().encode(changePassword));
+        }else{
+            throw new PasswordNotMatchException("패스워드가 일치하지 않습니다");
+        }
+
+        return member.getId();
     }
 
 
