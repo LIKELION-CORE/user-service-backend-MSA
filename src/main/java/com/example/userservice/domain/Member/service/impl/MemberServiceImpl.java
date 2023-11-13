@@ -43,8 +43,6 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public String renewAccessToken(String refreshToken,Authentication authentication) {
         log.info("refreshToken = " + refreshToken);
-
-
         if (!jwtProvider.verifyToken(refreshToken)) {
             throw new InvalidTokenException();
         }

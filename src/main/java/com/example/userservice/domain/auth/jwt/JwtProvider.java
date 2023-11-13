@@ -23,7 +23,7 @@ public class JwtProvider {
     @Value("${token.secret}")
     private String SECRET_KEY;
 
-    public final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60 * 30; // 30 min
+    public final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60 ;
     public final long REFRESH_TOKEN_EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 14; // 14 week
 
     private final String HEADER_NAME = "Authorization";
@@ -35,7 +35,6 @@ public class JwtProvider {
         List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-
         return JWT.create()
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
@@ -48,7 +47,6 @@ public class JwtProvider {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        System.out.println(roles.get(0));
         return JWT.create()
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))

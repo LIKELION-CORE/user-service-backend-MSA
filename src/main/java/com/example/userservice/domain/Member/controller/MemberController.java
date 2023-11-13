@@ -5,16 +5,21 @@ import com.example.userservice.domain.Member.dto.request.*;
 import com.example.userservice.domain.Member.dto.response.CreateMemberResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberInfoResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberRenewAccessTokenResponseDto;
+import com.example.userservice.domain.Member.entity.Member;
 import com.example.userservice.domain.Member.service.MemberService;
 import com.example.userservice.domain.auth.cookie.CookieUtil;
 import com.example.userservice.domain.auth.jwt.JwtProvider;
+import com.example.userservice.domain.auth.jwt.MemberDetails;
+import com.example.userservice.domain.auth.service.RefreshTokenService;
 import com.example.userservice.global.common.CommonResDto;
+import com.example.userservice.global.exception.error.InvalidTokenException;
 import com.example.userservice.global.exception.error.NotFoundAccountException;
 import com.example.userservice.global.exception.error.UnAuthorizedException;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -22,9 +27,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -41,6 +48,7 @@ public class MemberController {
     private final Environment env;
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
 
     @PostMapping("/renew-access-token")
@@ -66,8 +74,7 @@ public class MemberController {
             String refreshToken = jwtProvider.generateRefreshToken(authentication.getName(), authentication);
 
             refreshTokenService.setRefreshToken(authentication.getName(),refreshToken);
-            CookieUtil.addCookie(response,"ref" +
-                    "reshToken", refreshToken,jwtProvider.REFRESH_TOKEN_EXPIRATION_TIME);
+            CookieUtil.addCookie(response,"refreshToken", refreshToken,jwtProvider.REFRESH_TOKEN_EXPIRATION_TIME);
 
             // token body comment
             return ResponseEntity.ok(MemberRenewAccessTokenResponseDto.builder()
@@ -76,16 +83,8 @@ public class MemberController {
         }catch (InvalidTokenException invalidTokenException){
             throw new InvalidTokenException("토큰이 유효하지않습니다");
         }
-
->>>>>>> Stashed changes
-
-        // token body comment
-        return ResponseEntity.ok(MemberRenewAccessTokenResponseDto.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build()
-        );
     }
+
     @PostMapping("")
     public ResponseEntity<CommonResDto<CreateMemberResponseDto>> createMember(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
 
@@ -165,7 +164,7 @@ public class MemberController {
 
     @PostMapping("/info")
     public ResponseEntity<?> info(Principal principal) {
-
+        log.info("회원정보조회");
         return new ResponseEntity<>(
                 new CommonResDto<>(1,"회원조회성공",memberService.getMemberInfo(principal.getName())),HttpStatus.OK
         );
