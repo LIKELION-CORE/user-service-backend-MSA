@@ -2,7 +2,11 @@
 spring:
   cloud:
     config:
+<<<<<<< Updated upstream
       uri: http://api.likelion-apply.org:8888
+=======
+      uri: http://localhost:8888
+>>>>>>> Stashed changes
       name: user-service # yml 파일명 써주면 된다.
   profiles:
     active: dev
@@ -46,7 +50,11 @@ spring:
 #    check-template: true
 #    cache: false
 
+<<<<<<< Updated upstream
 ## 배포할 떄 해당하는 bootstrap.yml 옵션을 오픈시킨다.
+=======
+# 배포할 떄 해당하는 bootstrap.yml 옵션을 오픈시킨다.
+>>>>>>> Stashed changes
 #spring:
 #  cloud:
 #    config:

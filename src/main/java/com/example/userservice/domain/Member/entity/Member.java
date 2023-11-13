@@ -1,10 +1,12 @@
 package com.example.userservice.domain.Member.entity;
 
+import com.example.userservice.domain.Member.dto.request.UpdateMemberByAdminRequestDto;
 import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
 import com.example.userservice.domain.auth.jwt.MemberRole;
 import com.example.userservice.global.entity.BaseTimeEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.hibernate.sql.Update;
 
 import javax.persistence.*;
 
@@ -55,5 +57,11 @@ public class Member extends BaseTimeEntity {
                 this.phone=updateMemberRequesstDto.getPhone();
                 this.studentId=updateMemberRequesstDto.getStudentId();
 
+        }
+        public void updateMemberByAdmin(UpdateMemberByAdminRequestDto updateMemberByAdminRequestDto){
+                this.department=updateMemberByAdminRequestDto.getDepartment();
+                this.memberRole=updateMemberByAdminRequestDto.getMemberRole();
+                this.phone=updateMemberByAdminRequestDto.getPhone();
+                this.studentId=updateMemberByAdminRequestDto.getStudentId();
         }
 }

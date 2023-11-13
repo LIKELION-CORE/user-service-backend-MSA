@@ -44,6 +44,24 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, errorCode.getStatus());
     }
 
+    @ExceptionHandler(UnAuthorizedException.class)
+    protected ResponseEntity<?> handleUnAuthorizedException(UnAuthorizedException ex) {
+        ErrorCode errorCode = ErrorCode.UnAuthorizedException;
+
+        ErrorResponse error = ErrorResponse.builder()
+                .status(errorCode.getStatus().value())
+                .message(errorCode.getMessage())
+                .code(errorCode.getCode())
+                .build();
+
+        CommonResponse response = CommonResponse.builder()
+                .success(false)
+                .error(error)
+                .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
     /**
      * 계정 주요 정보의 암호화 과정이 실패 했을때
      */

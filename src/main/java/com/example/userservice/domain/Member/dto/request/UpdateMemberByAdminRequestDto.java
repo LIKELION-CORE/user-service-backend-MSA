@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 @Setter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UpdateMemberRequesstDto {
+public class UpdateMemberByAdminRequestDto{
 
     @NotNull(message = "학번은 필수입니다.")
     private Integer studentId;
@@ -28,5 +28,5 @@ public class UpdateMemberRequesstDto {
     private MemberRole memberRole;
 
     @Pattern(regexp = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", message = "이메일 형식이 맞지 않습니다.")
-    private String email;
+    private String userId;
 }
