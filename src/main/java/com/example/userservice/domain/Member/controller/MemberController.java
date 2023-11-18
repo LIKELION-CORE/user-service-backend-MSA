@@ -4,6 +4,7 @@ package com.example.userservice.domain.Member.controller;
 import com.example.userservice.domain.Member.dto.request.*;
 import com.example.userservice.domain.Member.dto.response.CreateMemberResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberInfoResponseDto;
+import com.example.userservice.domain.Member.dto.response.MemberListGetAllByAdmin;
 import com.example.userservice.domain.Member.dto.response.MemberRenewAccessTokenResponseDto;
 import com.example.userservice.domain.Member.entity.Member;
 import com.example.userservice.domain.Member.service.MemberService;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,7 +82,7 @@ public class MemberController {
             return ResponseEntity.ok(MemberRenewAccessTokenResponseDto.builder()
                     .accessToken(accessToken)
                     .build());
-        }catch (InvalidTokenException invalidTokenException){
+            }catch (InvalidTokenException invalidTokenException){
             throw new InvalidTokenException("토큰이 유효하지않습니다");
         }
     }
@@ -107,27 +109,6 @@ public class MemberController {
         }
 
         memberService.updateMember(principal.getName(),updateMemberRequesstDto);
-        return new ResponseEntity<>(new CommonResDto<>(1,"회원수정완료",""), HttpStatus.OK);
-    }
-
-    @PutMapping("/admin/update")
-    public ResponseEntity<?> updateMemberByAdmin(Principal principal,
-                                          HttpServletRequest request,
-                                          @Valid @RequestBody UpdateMemberByAdminRequestDto updateMemberByAdminRequestDto) {
-
-        log.info("관리자 회원수정 진행 중");
-        if(principal==null){
-            throw new NotFoundAccountException("유저를 찾을 수 없습니다");
-        }
-        String refreshTokenCookie = CookieUtil.getRefreshTokenCookie(request);
-        List<String> rolesFromToken = jwtProvider.getRolesFromToken(refreshTokenCookie);
-
-        if(rolesFromToken.contains("ROOT") || rolesFromToken.contains("ADMIN")){
-
-            memberService.updateMemberByAdmin(principal.getName(),updateMemberByAdminRequestDto);
-        }else{
-            throw new UnAuthorizedException("권한이 없습니다");
-        }
         return new ResponseEntity<>(new CommonResDto<>(1,"회원수정완료",""), HttpStatus.OK);
     }
 
@@ -168,6 +149,46 @@ public class MemberController {
         return new ResponseEntity<>(
                 new CommonResDto<>(1,"회원조회성공",memberService.getMemberInfo(principal.getName())),HttpStatus.OK
         );
+    }
+
+    @PutMapping("/admin/update")
+    public ResponseEntity<?> updateMemberByAdmin(Principal principal,
+                                                 HttpServletRequest request,
+                                                 @Valid @RequestBody UpdateMemberByAdminRequestDto updateMemberByAdminRequestDto) {
+
+        log.info("관리자 회원수정 진행 중");
+        if(principal==null){
+            throw new NotFoundAccountException("유저를 찾을 수 없습니다");
+        }
+        String refreshTokenCookie = CookieUtil.getRefreshTokenCookie(request);
+        List<String> rolesFromToken = jwtProvider.getRolesFromToken(refreshTokenCookie);
+
+        if(rolesFromToken.contains("ROOT") || rolesFromToken.contains("ADMIN")){
+
+            memberService.updateMemberByAdmin(principal.getName(),updateMemberByAdminRequestDto);
+        }else{
+            throw new UnAuthorizedException("권한이 없습니다");
+        }
+        return new ResponseEntity<>(new CommonResDto<>(1,"회원수정완료",""), HttpStatus.OK);
+    }
+    @GetMapping("/admin/memberList")
+    public ResponseEntity<?> readAllMemberListByAdmin(Principal principal,
+                                                 HttpServletRequest request) {
+
+        log.info("관리자 유저전체 정보조회");
+        List<MemberListGetAllByAdmin> result=null;
+        if(principal==null){
+            throw new NotFoundAccountException("유저를 찾을 수 없습니다");
+        }
+        String refreshTokenCookie = CookieUtil.getRefreshTokenCookie(request);
+        List<String> rolesFromToken = jwtProvider.getRolesFromToken(refreshTokenCookie);
+
+        if(rolesFromToken.contains("ROOT") || rolesFromToken.contains("ADMIN")){
+            result = memberService.readAllMemberList();
+        }else{
+            throw new UnAuthorizedException("권한이 없습니다");
+        }
+        return new ResponseEntity<>(new CommonResDto<>(1,"회원정보조회성공",result), HttpStatus.OK);
     }
 
 }

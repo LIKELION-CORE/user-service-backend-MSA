@@ -6,6 +6,7 @@ import com.example.userservice.domain.Member.dto.request.UpdateMemberPasswordReq
 import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
 import com.example.userservice.domain.Member.dto.response.CreateMemberResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberInfoResponseDto;
+import com.example.userservice.domain.Member.dto.response.MemberListGetAllByAdmin;
 import com.example.userservice.domain.Member.entity.Member;
 import com.example.userservice.domain.Member.repository.dao.MemberDao;
 import com.example.userservice.domain.Member.service.MemberService;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -78,6 +80,16 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return member.getId();
+    }
+
+    @Override
+    public List<MemberListGetAllByAdmin> readAllMemberList() {
+        List<Member> allMember = memberDao.findAllMember();
+
+        List<MemberListGetAllByAdmin> result = allMember.stream().map(member -> new MemberListGetAllByAdmin(member))
+                .collect(Collectors.toList());
+
+        return result;
     }
 
 

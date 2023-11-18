@@ -6,9 +6,12 @@ import com.example.userservice.domain.Member.dto.request.UpdateMemberPasswordReq
 import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
 import com.example.userservice.domain.Member.dto.response.CreateMemberResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberInfoResponseDto;
+import com.example.userservice.domain.Member.dto.response.MemberListGetAllByAdmin;
 import com.example.userservice.domain.Member.entity.Member;
 import com.example.userservice.global.common.CommonResDto;
 import org.springframework.security.core.Authentication;
+
+import java.util.List;
 
 public interface MemberService {
 
@@ -24,4 +27,6 @@ public interface MemberService {
     Long updateMemberByAdmin(String userId, UpdateMemberByAdminRequestDto updateMemberByAdminRequestDto);
 
     Long memberPasswordUpdate(String name, UpdateMemberPasswordRequestDto updateMemberPasswordRequestDto);
+
+    List<MemberListGetAllByAdmin> readAllMemberList();
 }
