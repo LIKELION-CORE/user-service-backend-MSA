@@ -7,6 +7,7 @@ import com.example.userservice.global.exception.error.NotFoundAccountException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -34,6 +35,12 @@ public class MemberDaoImpl implements MemberDao {
     public void deleteById(Long memberId) {
         memberRepository.deleteById(memberId);
 
+    }
+
+    @Override
+    public List<Member> findAllMember() {
+        List<Member> memberList = memberRepository.findAll();
+        return memberList;
     }
 
 //    @Override
