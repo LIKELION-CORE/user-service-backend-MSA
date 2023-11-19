@@ -52,9 +52,7 @@ public class Member extends BaseTimeEntity {
 
         public void updateMember(UpdateMemberRequesstDto updateMemberRequesstDto) {
                 this.department=updateMemberRequesstDto.getDepartment();
-                this.memberRole=updateMemberRequesstDto.getMemberRole();
                 this.phone=updateMemberRequesstDto.getPhone();
-                this.userId=updateMemberRequesstDto.getEmail();
                 this.studentId=updateMemberRequesstDto.getStudentId();
 
         }
