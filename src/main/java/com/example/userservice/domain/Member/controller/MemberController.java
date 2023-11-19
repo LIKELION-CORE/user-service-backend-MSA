@@ -13,6 +13,7 @@ import com.example.userservice.domain.auth.jwt.JwtProvider;
 import com.example.userservice.domain.auth.jwt.MemberDetails;
 import com.example.userservice.domain.auth.service.RefreshTokenService;
 import com.example.userservice.global.common.CommonResDto;
+import com.example.userservice.global.exception.error.EmailNotValidException;
 import com.example.userservice.global.exception.error.InvalidTokenException;
 import com.example.userservice.global.exception.error.NotFoundAccountException;
 import com.example.userservice.global.exception.error.UnAuthorizedException;
@@ -104,11 +105,11 @@ public class MemberController {
                                           @Valid @RequestBody UpdateMemberRequesstDto updateMemberRequesstDto) {
 
         log.info("회원수정 진행 중");
-        if(principal==null){
-            throw new NotFoundAccountException("유저를 찾을 수 없습니다");
+        if(principal!=null && principal.getName().equals(updateMemberRequesstDto.getEmail())){
+            memberService.updateMember(principal.getName(),updateMemberRequesstDto);
+        }else {
+            throw new UnAuthorizedException("유효하지 않은 사용자 입니다.");
         }
-
-        memberService.updateMember(principal.getName(),updateMemberRequesstDto);
         return new ResponseEntity<>(new CommonResDto<>(1,"회원수정완료",""), HttpStatus.OK);
     }
 
