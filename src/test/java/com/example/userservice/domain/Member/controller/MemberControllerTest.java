@@ -146,7 +146,6 @@ class MemberControllerTest extends RestDocsBasic {
         String userId = "member1";
 
         UpdateMemberRequesstDto updateMemberRequesstDto = UpdateMemberRequesstDto.builder()
-                .memberRole(MemberRole.LION)
                 .email("kbsserver@naver.com")
                 .studentId(202184007)
                 .department("ICT공학부")

@@ -112,7 +112,6 @@ class MemberServiceImplTest {
                 .phone(phone)
                 .email(email)
                 .department(password)
-                .memberRole(memberRole)
                 .studentId(studentId)
                 .build();
         return updateMemberRequesstDto;

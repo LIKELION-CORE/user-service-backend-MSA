@@ -1,9 +1,6 @@
 package com.example.userservice.domain.Member.service.impl;
 
-import com.example.userservice.domain.Member.dto.request.SignUpRequestDto;
-import com.example.userservice.domain.Member.dto.request.UpdateMemberByAdminRequestDto;
-import com.example.userservice.domain.Member.dto.request.UpdateMemberPasswordRequestDto;
-import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
+import com.example.userservice.domain.Member.dto.request.*;
 import com.example.userservice.domain.Member.dto.response.CreateMemberResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberInfoResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberListGetAllByAdmin;
@@ -161,9 +158,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Transactional
-    public Long deleteMember(String memberId) {
+    public Long deleteMember(DeleteMemberRequestDto deleteMemberRequestDto, String memberId) {
         Member member = memberDao.findMemberByUserId(memberId);
-        memberDao.deleteById(member.getId());
+        System.out.println(member.getPassword());
+        if(new BCryptPasswordEncoder().matches(deleteMemberRequestDto.getPassword(),member.getPassword())){
+            memberDao.deleteById(member.getId());
+        }else{
+            throw new PasswordNotMatchException();
+        }
+
         return member.getId();
     }
 
