@@ -26,4 +26,6 @@ public interface MemberService {
     Long memberPasswordUpdate(String name, UpdateMemberPasswordRequestDto updateMemberPasswordRequestDto);
 
     List<MemberListGetAllByAdmin> readAllMemberList();
+
+    void deleteMemberByAdmin(DeleteMemberByAdminRequestDto deleteMemberByAdminRequestDto);
 }

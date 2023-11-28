@@ -89,6 +89,16 @@ public class MemberServiceImpl implements MemberService {
         return result;
     }
 
+    @Override
+    @Transactional
+    public void deleteMemberByAdmin(DeleteMemberByAdminRequestDto deleteMemberByAdminRequestDto) {
+        String targetEmail = deleteMemberByAdminRequestDto.getEmail();
+        // 계정 있는지 유효성체크
+        Member member = memberDao.findMemberByUserId(targetEmail);
+
+        memberDao.deleteById(member.getId());
+    }
+
 
     @Transactional
     public CommonResDto<CreateMemberResponseDto> createMember(SignUpRequestDto signUpRequestDto) {
@@ -126,7 +136,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     public Member findMemberByUserId(String userId) {
-
         return memberDao.findMemberByUserId(userId);
     }
 
@@ -150,12 +159,7 @@ public class MemberServiceImpl implements MemberService {
         return member.getId();
     }
 
-    private boolean passwordValidationCheck(String userPassword, Member member) {
-        if(bCryptPasswordEncoder.matches(userPassword, member.getPassword())){
-            return true;
-        }
-        return false;
-    }
+
 
     @Transactional
     public Long deleteMember(DeleteMemberRequestDto deleteMemberRequestDto, String memberId) {
@@ -168,6 +172,13 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return member.getId();
+    }
+
+    private boolean passwordValidationCheck(String userPassword, Member member) {
+        if(bCryptPasswordEncoder.matches(userPassword, member.getPassword())){
+            return true;
+        }
+        return false;
     }
 
 

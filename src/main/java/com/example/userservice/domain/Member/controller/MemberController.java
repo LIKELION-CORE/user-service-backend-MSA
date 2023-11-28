@@ -152,6 +152,26 @@ public class MemberController {
         );
     }
 
+    @DeleteMapping("/admin/delete")
+    public ResponseEntity<?> deleteMemberByAdmin(Principal principal,
+                                                 HttpServletRequest request,
+                                                 @Valid @RequestBody DeleteMemberByAdminRequestDto deleteMemberByAdminRequestDto) {
+
+        log.info("관리자 회원삭제 진행 중");
+        if(principal==null){
+            throw new NotFoundAccountException("유저를 찾을 수 없습니다");
+        }
+        String refreshTokenCookie = CookieUtil.getRefreshTokenCookie(request);
+        List<String> rolesFromToken = jwtProvider.getRolesFromToken(refreshTokenCookie);
+
+        if(rolesFromToken.contains("ROOT") || rolesFromToken.contains("ADMIN")){
+            memberService.deleteMemberByAdmin(deleteMemberByAdminRequestDto);
+        }else{
+            throw new UnAuthorizedException("권한이 없습니다");
+        }
+        return new ResponseEntity<>(new CommonResDto<>(1,"회원삭제완료",""), HttpStatus.OK);
+    }
+
     @PutMapping("/admin/update")
     public ResponseEntity<?> updateMemberByAdmin(Principal principal,
                                                  HttpServletRequest request,
