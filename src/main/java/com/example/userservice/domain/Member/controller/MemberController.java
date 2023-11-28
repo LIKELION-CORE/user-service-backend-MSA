@@ -126,10 +126,10 @@ public class MemberController {
 
 
     @DeleteMapping("")
-    public ResponseEntity<?> deleteMember(Principal principal) {
+    public ResponseEntity<?> deleteMember(@RequestBody DeleteMemberRequestDto deleteMemberRequestDto, Principal principal) {
 
         log.info("회원삭제 진행 중");
-        return new ResponseEntity<>(new CommonResDto<>(1,"회원삭제완료",memberService.deleteMember(principal.getName())), HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto<>(1,"회원삭제완료",memberService.deleteMember(deleteMemberRequestDto,principal.getName())), HttpStatus.OK);
     }
 
 

@@ -7,6 +7,7 @@ import com.example.userservice.domain.Mail.service.MailSenderService;
 import com.example.userservice.domain.Member.entity.Member;
 import com.example.userservice.domain.Member.repository.MemberRepository;
 import com.example.userservice.global.config.redis.util.EmailRedisUtil;
+import com.example.userservice.global.exception.error.DuplicateAccountException;
 import com.example.userservice.global.exception.error.EmailNotValidException;
 import com.example.userservice.global.exception.error.NotFoundAccountException;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import javax.mail.internet.MimeMessage;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -40,11 +42,13 @@ public class MailSenderServiceImpl implements MailSenderService {
 
 
     @Override
-    @Async
     public void sendMail(SendMailDto sendMailDto) throws MessagingException {
         String email=sendMailDto.getEmail();
         Integer randomNumber=getVerificationNumber();
         String verifyPurpose = sendMailDto.getEmailPurpose();
+
+        // state 별 이메일 유효성 검증
+        emailValidationCheck(email, verifyPurpose);
 
 
         if (emailRedisUtil.existData(email)) emailRedisUtil.deleteData(email);
@@ -79,6 +83,19 @@ public class MailSenderServiceImpl implements MailSenderService {
             }
         }
 
+    }
+
+    private void emailValidationCheck(String email, String verifyPurpose) {
+        if(verifyPurpose.equals("FORGOT_PASSWORD")){
+            memberRepository.findByUserId(email).orElseThrow(NotFoundAccountException::new);
+        }
+        if(verifyPurpose.equals("SIGNUP")){
+            Optional<Member> member = memberRepository.findByUserId(email);
+            if(member.isPresent()){
+                throw new DuplicateAccountException("중복된 회원입니다");
+            }
+
+        }
     }
 
     @Override

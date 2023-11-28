@@ -1,9 +1,6 @@
 package com.example.userservice.domain.Member.service;
 
-import com.example.userservice.domain.Member.dto.request.SignUpRequestDto;
-import com.example.userservice.domain.Member.dto.request.UpdateMemberByAdminRequestDto;
-import com.example.userservice.domain.Member.dto.request.UpdateMemberPasswordRequestDto;
-import com.example.userservice.domain.Member.dto.request.UpdateMemberRequesstDto;
+import com.example.userservice.domain.Member.dto.request.*;
 import com.example.userservice.domain.Member.dto.response.CreateMemberResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberInfoResponseDto;
 import com.example.userservice.domain.Member.dto.response.MemberListGetAllByAdmin;
@@ -20,7 +17,7 @@ public interface MemberService {
     MemberInfoResponseDto getMemberInfo(String name);
 
     Long updateMember(String memberId,UpdateMemberRequesstDto updateMemberRequesstDto);
-    Long deleteMember(String userId);
+    Long deleteMember(DeleteMemberRequestDto deleteMemberRequestDto, String userId);
 
     String renewAccessToken(String refreshToken, Authentication authentication);
 
