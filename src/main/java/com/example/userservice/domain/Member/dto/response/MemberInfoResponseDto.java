@@ -15,14 +15,16 @@ public class MemberInfoResponseDto {
     private String department;
     private String phone;
     private String email;
+    private String memberRole;
 
     @Builder
-    public MemberInfoResponseDto(Long id, String name, Integer studentId, String department, String phone, String email) {
+    public MemberInfoResponseDto(Long id, String name, Integer studentId, String department, String phone, String email,String memberRole) {
         this.id = id;
         this.name = name;
         this.studentId = studentId;
         this.department = department;
         this.phone = phone;
         this.email = email;
+        this.memberRole=memberRole;
     }
 }
