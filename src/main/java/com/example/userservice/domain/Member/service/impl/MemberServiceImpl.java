@@ -148,6 +148,7 @@ public class MemberServiceImpl implements MemberService {
                 .phone(member.getPhone())
                 .name(member.getName())
                 .studentId(member.getStudentId())
+                .memberRole(member.getMemberRole().toString())
                 .build();
     }
 
